@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GD Admin</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI','Myanmar Text',sans-serif;background:#0f0f1a;color:#fff;padding:12px}
+.login{max-width:280px;margin:60px auto;text-align:center}
+.login h2{color:#ffd700;margin-bottom:12px;font-size:1.1rem}
+.login input{width:100%;padding:12px;margin:6px 0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.2);border-radius:8px;color:#fff;font-size:1rem}
+.login button{width:100%;padding:12px;background:linear-gradient(135deg,#ffd700,#ffaa00);border:none;border-radius:8px;color:#1a1a2e;font-weight:700;font-size:1rem;cursor:pointer}
+.panel{max-width:600px;margin:0 auto;display:none}
+h1{color:#ffd700;font-size:1rem;text-align:center;margin-bottom:12px}
+.sec{background:#16213e;border-radius:10px;padding:12px;margin-bottom:10px}
+.sec h3{color:#ffd700;font-size:.82rem;margin-bottom:8px}
+.row{display:flex;gap:6px;margin-bottom:5px;align-items:center}
+.row .name{flex:1;font-size:.72rem;color:#ccc;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row input[type=number]{width:90px;padding:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:5px;color:#ffd700;font-size:.8rem;font-weight:600;text-align:right}
+.row input[type=text]{width:120px;padding:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:5px;color:#fff;font-size:.72rem}
+.btn{padding:12px 20px;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:.9rem;display:block;width:100%;margin-top:10px}
+.btn-g{background:#00d474;color:#fff}
+.btn-y{background:linear-gradient(135deg,#ffd700,#ffaa00);color:#1a1a2e}
+.info{font-size:.68rem;color:#a0a0b0;line-height:1.7;background:rgba(255,255,255,.03);padding:10px;border-radius:8px;margin-bottom:10px}
+.info a{color:#ffd700}
+.toast{position:fixed;top:12px;right:12px;padding:10px 16px;border-radius:8px;font-size:.8rem;font-weight:600;z-index:9999;display:none}
+.toast.ok{display:block;background:#00d474;color:#fff}
+</style>
+</head>
+<body>
+<div class="login" id="lb">
+<h2>🔐 GD Admin</h2>
+<input type="password" id="pw" placeholder="Password" onkeydown="if(event.key==='Enter')login()">
+<button onclick="login()">ဝင်မယ်</button>
+</div>
+<div class="panel" id="pn">
+<h1>📊 GoldenDiamond Admin</h1>
+<div class="sec">
+<div class="info">
+<strong style="color:#ffd700">ဈေးပြောင်းနည်း:</strong><br>
+1️⃣ အောက်မှာ ဈေးတွေ တိုက်ရိုက် ပြင်ပါ<br>
+2️⃣ <strong style="color:#00d474">[📥 Download config.json]</strong> နှိပ်ပါ<br>
+3️⃣ <a href="https://github.com/psychologicmm-glitch/goldendiamondmm" target="_blank">GitHub</a> မှာ config.json ကို <strong>delete</strong> → <strong>upload new</strong><br>
+✅ Website မှာ ဈေးအသစ် ချက်ချင်း ပြောင်းမယ်!
+</div>
+</div>
+<div class="sec">
+<h3>⚔️ MLBB Diamonds (18 packages)</h3>
+<div id="ml"></div>
+</div>
+<div class="sec">
+<h3>🎯 PUBG Mobile (29 packages)</h3>
+<div id="pb"></div>
+</div>
+<div class="sec" style="border:2px solid #00d474">
+<button class="btn btn-g" onclick="dl()">📥 config.json Download ပြီး GitHub မှာ တင်မယ်</button>
+</div>
+</div>
+<div class="toast" id="t"></div>
+<script>
+var P={mlbb:[
+{n:'202 Diamonds',p:11000},{n:'404 Diamonds',p:21900},{n:'606 Diamonds',p:32900},
+{n:'829 Diamonds',p:41900},{n:'1031 Diamonds',p:52800},{n:'1233 Diamonds',p:64100},
+{n:'1435 Diamonds',p:75100},{n:'1637 Diamonds',p:86100},{n:'2157 Diamonds',p:104100},
+{n:'2986 Diamonds',p:140600},{n:'3489 Diamonds',p:165100},{n:'4365 Diamonds',p:207100},
+{n:'6598 Diamonds',p:305100},{n:'8796 Diamonds',p:399100},{n:'9288 Diamonds',p:427900},
+{n:'9625 Diamonds',p:440000},{n:'10051 Diamonds',p:630100},{n:'Weekly Pass',p:6300}
+],pubg:[
+{n:'60 UC',p:4650},{n:'120 UC',p:9150},{n:'180 UC',p:13650},{n:'325 UC',p:22150},
+{n:'385 UC',p:26650},{n:'660 UC',p:42650},{n:'720 UC',p:47350},{n:'1320 UC',p:85150},
+{n:'1500 UC',p:98650},{n:'1800 UC',p:110150},{n:'3850 UC',p:209150},{n:'8100 UC',p:400150},
+{n:'First Purchase Pack',p:5150},{n:'Firearm Material Pack',p:13650},{n:'Mythic Emblem Pack',p:22650},
+{n:'PUBG Prime 1M',p:4750},{n:'Prime 3M',p:13150},{n:'Prime 6M',p:26650},{n:'Prime 12M',p:51750},
+{n:'Prime+ 1M',p:41150},{n:'Prime+ 3M',p:126150},{n:'Prime+ 6M',p:254150},{n:'Prime+ 12M',p:509150},
+{n:'Weekly Deal Pack',p:5150},{n:'Weekly Deal Pack2',p:14650},{n:'Weekly Mythic Emblem',p:15050},
+{n:'Elite Pass (50)',p:25150},{n:'Elite Pass (100)',p:51050},{n:'Elite Pass+ (10)',p:125050}
+]};
+
+function login(){
+if(document.getElementById('pw').value==='Kyaw1038'){
+document.getElementById('lb').style.display='none';
+document.getElementById('pn').style.display='block';
+render();
+}else{alert('❌ Password မှား')}
+}
+
+function render(){
+var ml=document.getElementById('ml');
+var pb=document.getElementById('pb');
+ml.innerHTML=P.mlbb.map(function(x,i){
+return '<div class="row"><span class="name">'+x.n+'</span><input type="number" value="'+x.p+'" data-g="mlbb" data-i="'+i+'"></div>';
+}).join('');
+pb.innerHTML=P.pubg.map(function(x,i){
+return '<div class="row"><span class="name">'+x.n+'</span><input type="number" value="'+x.p+'" data-g="pubg" data-i="'+i+'"></div>';
+}).join('');
+}
+
+function dl(){
+var mlbb=[];var pubg=[];
+document.querySelectorAll('[data-g="mlbb"]').forEach(function(inp){
+var i=parseInt(inp.dataset.i);
+mlbb.push({id:P.mlbb[i].n.toLowerCase().replace(/\s+/g,'').replace('diamonds','d').replace('weeklypass','wp'),name:P.mlbb[i].n,price:parseInt(inp.value)||0});
+});
+document.querySelectorAll('[data-g="pubg"]').forEach(function(inp){
+var i=parseInt(inp.dataset.i);
+pubg.push({id:P.pubg[i].n.toLowerCase().replace(/\s+/g,'').replace(/[^a-z0-9]/g,''),name:P.pubg[i].n,price:parseInt(inp.value)||0});
+});
+var config={mlbb:mlbb,pubg:pubg,version:Date.now(),updatedAt:new Date().toISOString()};
+var blob=new Blob([JSON.stringify(config,null,2)],{type:'application/json'});
+var a=document.createElement('a');
+a.href=URL.createObjectURL(blob);
+a.download='config.json';
+a.click();
+toast('✅ config.json download ပြီး! GitHub မှာ ပြန်တင်ပါ။');
+}
+
+function toast(m){var t=document.getElementById('t');t.textContent=m;t.className='toast ok';setTimeout(function(){t.className='toast'},4000)}
+</script>
+</body>
+</html>
